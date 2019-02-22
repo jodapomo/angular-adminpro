@@ -10,6 +10,7 @@ import { PAGES_ROUTES } from './pages.routes';
 import { IncreaserComponent } from '../components/increaser/increaser.component';
 import { ChartsModule } from 'ng2-charts';
 import { DonutGraphicComponent } from '../components/donut-graphic/donut-graphic.component';
+import { AccountSettingsComponent } from './account-settings/account-settings.component';
 
 @NgModule({
     declarations: [
@@ -18,7 +19,8 @@ import { DonutGraphicComponent } from '../components/donut-graphic/donut-graphic
         ProgressComponent,
         Graphics1Component,
         IncreaserComponent,
-        DonutGraphicComponent
+        DonutGraphicComponent,
+        AccountSettingsComponent
     ],
     exports: [
         DashboardComponent,
