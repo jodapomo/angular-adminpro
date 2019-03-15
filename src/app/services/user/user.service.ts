@@ -5,6 +5,7 @@ import { API_URL } from 'src/app/config/config';
 import { map } from 'rxjs/operators';
 import swal from 'sweetalert';
 import { Router } from '@angular/router';
+import { UploadFileService } from '../upload-file/upload-file.service';
 
 declare const gapi: any;
 
@@ -19,6 +20,7 @@ export class UserService {
   constructor(
     public http: HttpClient,
     public router: Router,
+    public _uploadService: UploadFileService,
   ) {
     this.loadStorage();
   }
@@ -107,6 +109,39 @@ export class UserService {
         swal('User created', user.email, 'success');
         return res.user;
       }));
+
+  }
+
+  updateUser( user: User ) {
+
+    let url = API_URL + '/users/' + user._id;
+
+    url += '?token=' + this.token;
+
+    return this.http.put( url, user )
+      .pipe( map( (res: any) => {
+
+        const userDB: User = res.user;
+
+        this.saveStorage( userDB._id, this.token, userDB );
+        swal('User updated', user.name, 'success');
+
+        return true;
+      }));
+
+  }
+
+  changeImage( file: File, id: string ) {
+
+    this._uploadService.uploadFile( file, 'users', id)
+      .then( (res: any) => {
+        this.user.img = res.updatedUser.img;
+        swal( 'User image updated', this.user.name, 'success');
+        this.saveStorage( id, this.token, this.user );
+      })
+      .catch( err => {
+        console.log(err);
+      });
 
   }
 
