@@ -121,9 +121,11 @@ export class UserService {
     return this.http.put( url, user )
       .pipe( map( (res: any) => {
 
-        const userDB: User = res.user;
+        if ( user._id === this.user._id ) {
+          const userDB: User = res.user;
+          this.saveStorage( userDB._id, this.token, userDB );
+        }
 
-        this.saveStorage( userDB._id, this.token, userDB );
         swal('User updated', user.name, 'success');
 
         return true;
@@ -142,6 +144,34 @@ export class UserService {
       .catch( err => {
         console.log(err);
       });
+
+  }
+
+  loadUsers( offset: number = 0 ) {
+    const url = API_URL + '/users?offset=' + offset;
+
+    return this.http.get(url);
+  }
+
+  searchUsers( term: string ) {
+    const url = API_URL + '/search/users/' + term;
+
+    return this.http.get(url)
+      .pipe( map( (res: any) => res.users) );
+  }
+
+  deleteUser( id: string ) {
+
+    let url = API_URL + '/users/' + id;
+    url += '?token=' + this.token;
+
+    return this.http.delete( url )
+      .pipe( map( res => {
+        swal('User has been deleted!', {
+          icon: 'success',
+        });
+        return true;
+      }) );
 
   }
 
