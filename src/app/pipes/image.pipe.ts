@@ -30,7 +30,7 @@ export class ImagePipe implements PipeTransform {
         break;
 
       default:
-        console.log('Image type not valid. Valid type: user, medic, hospital');
+        console.log( type + ' image type not valid. Valid type: user, medic, hospital' );
         url += '/users/xxx';
         break;
 

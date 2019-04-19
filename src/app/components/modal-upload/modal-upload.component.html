@@ -10,7 +10,7 @@
         </div>
         <div class="modal-body" align="center">
           
-          <img *ngIf="!imageUrlTemp" [src]="_modalUploadService.currentImage | image" class="w150">
+          <img *ngIf="!imageUrlTemp" [src]="_modalUploadService.currentImage | image:defineType()" class="w150">
           <img *ngIf="imageUrlTemp" [src]="imageUrlTemp" class="w150">
 
           <input #inputImage (change)="selectImage( $event.target.files[0] )" type="file">

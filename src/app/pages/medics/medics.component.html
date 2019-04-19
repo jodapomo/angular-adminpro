@@ -1,0 +1,64 @@
+<div class="row animated fadeIn">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+
+        <input #input (keyup)="searchMedics( input.value )" type="text" class="form-control" placeholder="Search medics...">
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+
+        <div class="text-right">
+          <button [routerLink]="['/medic','new']" routerLinkActive="router-link-active"  type="button" class="btn waves-effect waves-light btn-rounded btn-primary">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            New medic
+          </button>
+        </div>
+
+        <h3 class="card-title">Registered Medics ( <small> {{ _medicService.count }} </small> )</h3>
+
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Medic</th>
+              <th>Hospital</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let medic of medics">
+              <td>
+                <img [src]="medic.img | image:'medic'" class="img-50 img-circle">
+              </td>
+              <td>
+                {{ medic.name }}
+              </td>
+              <td>
+                {{ medic.hospital['name'] }}
+              </td>
+              <td>
+                <button [routerLink]="['/medic', medic._id]" class="btn btn-primary">
+                  <i class="fa fa-edit"></i>
+                </button>
+
+                <button (click)="deleteMedic( medic )" class="btn btn-danger">
+                  <i class="fa fa-trash-o"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+    </div>
+  </div>
+</div>

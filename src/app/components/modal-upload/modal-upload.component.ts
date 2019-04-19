@@ -12,15 +12,14 @@ export class ModalUploadComponent implements OnInit {
 
   imageToUpload: File;
   imageUrlTemp: any;
+  type: string;
 
   @ViewChild( 'inputImage' ) inputImage;
 
   constructor(
     public _uploadFileService: UploadFileService,
     public _modalUploadService: ModalUploadService
-  ) {
-    console.log('Modal listoooo');
-  }
+  ) {}
 
   ngOnInit() {
   }
@@ -69,6 +68,15 @@ export class ModalUploadComponent implements OnInit {
 
   clearInput() {
     this.inputImage.nativeElement.value = '';
-}
+  }
+
+  defineType() {
+    if ( this._modalUploadService.type === null || this._modalUploadService.type === undefined ) {
+      return;
+    } else {
+      return this._modalUploadService.type.slice(0, -1);
+    }
+
+  }
 
 }
