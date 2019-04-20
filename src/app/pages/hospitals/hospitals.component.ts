@@ -39,7 +39,7 @@ export class HospitalsComponent implements OnInit {
 
   loadHospitals() {
     this._hospitalService.loadHospitals()
-      .subscribe( hospitals => {this.hospitals = hospitals; console.log(hospitals); });
+      .subscribe( hospitals => this.hospitals = hospitals );
   }
 
   saveHospital( hospital: Hospital) {

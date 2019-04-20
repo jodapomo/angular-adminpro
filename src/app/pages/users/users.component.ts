@@ -98,7 +98,6 @@ export class UsersComponent implements OnInit {
 
         this._userService.deleteUser( user._id )
           .subscribe( (deleted: boolean) => {
-            console.log(deleted);
             this.loadUsers();
           });
       }

@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { User } from 'src/app/models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { API_URL } from 'src/app/config/config';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 import swal from 'sweetalert';
 import { Router } from '@angular/router';
 import { UploadFileService } from '../upload-file/upload-file.service';
+import { throwError } from 'rxjs';
 
 declare const gapi: any;
 
@@ -16,6 +17,7 @@ export class UserService {
 
   user: User;
   token: string;
+  menu: any[] = [];
 
   constructor(
     public http: HttpClient,
@@ -33,39 +35,51 @@ export class UserService {
     if ( localStorage.getItem('token') ) {
       this.token = localStorage.getItem('token');
       this.user = JSON.parse(localStorage.getItem('user'));
+      this.menu = JSON.parse(localStorage.getItem('menu'));
     } else {
       this.token = '';
       this.user = null;
+      this.menu = [];
     }
   }
 
-  saveStorage( id: string, token: string, user: User) {
+  saveStorage( id: string, token: string, user: User, menu: any) {
     localStorage.setItem('id', id);
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('menu', JSON.stringify(menu));
 
     this.user = user;
     this.token = token;
+    this.menu = menu;
   }
 
   logout() {
-    console.log(this.user.google);
+
     if ( this.user.google ) {
       gapi.load('auth2',  () => {
 
         const auth2 = gapi.auth2.getAuthInstance();
-        auth2.signOut().then(function () {
-          console.log('User signed out.');
-        });
+
+        if ( auth2 ) {
+
+          auth2.signOut().then(function () {
+            console.log('User signed out.');
+          });
+
+        }
       });
 
     }
 
     this.user = null;
     this.token = '';
+    this.menu = [];
+
     localStorage.removeItem('id');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('menu');
 
     this.router.navigate(['/login']);
 
@@ -76,7 +90,7 @@ export class UserService {
 
     return this.http.post( url, { token } )
       .pipe( map( (res: any) => {
-        this.saveStorage( res.id, res.token, res.user );
+        this.saveStorage( res.id, res.token, res.user, res.menu );
         return true;
       }));
 
@@ -94,8 +108,12 @@ export class UserService {
 
     return this.http.post( url, user )
       .pipe( map( (res: any ) => {
-        this.saveStorage( res.id, res.token, res.user );
+        this.saveStorage( res.id, res.token, res.user, res.menu );
         return true;
+      }), catchError( err => {
+
+        swal('Error login', err.error.message, 'error');
+        return throwError(err);
       }));
 
   }
@@ -108,6 +126,9 @@ export class UserService {
       .pipe( map( (res: any) => {
         swal('User created', user.email, 'success');
         return res.user;
+      }), catchError( err => {
+        swal(err.error.message, err.error.errors.message, 'error');
+        return throwError(err);
       }));
 
   }
@@ -123,12 +144,15 @@ export class UserService {
 
         if ( user._id === this.user._id ) {
           const userDB: User = res.user;
-          this.saveStorage( userDB._id, this.token, userDB );
+          this.saveStorage( userDB._id, this.token, userDB, this.menu );
         }
 
         swal('User updated', user.name, 'success');
 
         return true;
+      }), catchError( err => {
+        swal(err.error.message, err.error.errors.message, 'error');
+        return throwError(err);
       }));
 
   }
@@ -139,7 +163,7 @@ export class UserService {
       .then( (res: any) => {
         this.user.img = res.updatedUser.img;
         swal( 'User image updated', this.user.name, 'success');
-        this.saveStorage( id, this.token, this.user );
+        this.saveStorage( id, this.token, this.user, this.menu );
       })
       .catch( err => {
         console.log(err);
