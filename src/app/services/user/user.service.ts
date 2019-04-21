@@ -27,6 +27,26 @@ export class UserService {
     this.loadStorage();
   }
 
+  renewToken() {
+
+    let url = API_URL + 'login/renewtoken';
+    url += '?token=' + this.token;
+
+    return this.http.get( url )
+      .pipe( map( (res: any) => {
+
+        this.token = res.token;
+        localStorage.setItem('token', this.token);
+
+        return true;
+      }), catchError( err => {
+        this.router.navigate(['/login']);
+        swal('The token could not be renewed', '', 'error');
+        return throwError(err);
+      }));
+
+  }
+
   isLoggedIn() {
     return ( this.token.length > 5 ) ? true : false;
   }
